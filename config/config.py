@@ -10,3 +10,4 @@ class Config:
     MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD", "")
     MYSQL_DB = os.environ.get("MYSQL_DB", "student_mental_health_dss")
     MYSQL_PORT = int(os.environ.get("MYSQL_PORT", 3306))
+    SESSION_TIMEOUT_MINUTES = int(os.environ.get("SESSION_TIMEOUT_MINUTES", 30))
