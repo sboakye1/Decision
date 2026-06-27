@@ -114,3 +114,37 @@ CREATE TABLE dss_logs (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE counselor_assignments (
+    assignment_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    student_id INT UNSIGNED NOT NULL,
+    counselor_id INT UNSIGNED NOT NULL,
+    status ENUM('active', 'closed') NOT NULL DEFAULT 'active',
+    assigned_date DATE NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_assignment_student_counselor (student_id, counselor_id),
+    INDEX idx_counselor_assignments_counselor (counselor_id),
+    INDEX idx_counselor_assignments_student (student_id),
+    CONSTRAINT fk_counselor_assignments_student FOREIGN KEY (student_id) REFERENCES students(student_id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT fk_counselor_assignments_counselor FOREIGN KEY (counselor_id) REFERENCES counselors(counselor_id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE counselor_notes (
+    note_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    student_id INT UNSIGNED NOT NULL,
+    counselor_id INT UNSIGNED NOT NULL,
+    note_text TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_counselor_notes_student (student_id),
+    INDEX idx_counselor_notes_counselor (counselor_id),
+    CONSTRAINT fk_counselor_notes_student FOREIGN KEY (student_id) REFERENCES students(student_id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT fk_counselor_notes_counselor FOREIGN KEY (counselor_id) REFERENCES counselors(counselor_id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

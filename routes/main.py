@@ -75,3 +75,10 @@ def appointments():
 @login_required
 def reports():
     return render_template("reports.html")
+
+
+@main_bp.route("/system_flow")
+@login_required
+@require_role("admin")
+def system_flow():
+    return render_template("system_flow.html")

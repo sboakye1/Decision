@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Assignments</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+<body>
+    {% include 'nav.html' %}
+    <div class="admin-container">
+        <header class="admin-header">
+            <div>
+                <h1>Admin Assignment Dashboard</h1>
+                <p>Assign or close active counselor cases for medium and high risk students.</p>
+            </div>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="row">
+            <div class="col-md-8 mb-4">
+                <div class="card">
+                    <div class="card-header">Pending / Active Student Cases</div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover mb-0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Program / Level</th>
+                                    <th>Risk</th>
+                                    <th>Score</th>
+                                    <th>Counselor</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in students %}
+                                    <tr>
+                                        <td>{{ student.student_name }}</td>
+                                        <td>{{ student.program }} / {{ student.level }}</td>
+                                        <td>
+                                                <span class="risk-badge risk-{{ student.risk_level | lower }}">{{ student.risk_level }}</span>
+                                        </td>
+                                        <td>{{ student.total_score }}</td>
+                                        <td>{{ student.counselor_name or 'Waiting for assignment' }}</td>
+                                        <td>
+                                            {% if student.counselor_name %}
+                                                <form action="{{ url_for('admin_assignments.close_assignment') }}" method="post" class="d-inline">
+                                                    <input type="hidden" name="student_id" value="{{ student.student_id }}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Close</button>
+                                                </form>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">No active high/medium risk students found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-header">Counselor Workload</div>
+                    <div class="card-body">
+                        {% for counselor in counselors %}
+                        <div class="mb-3">
+                            <h5>{{ counselor.counselor_name }}</h5>
+                            <p class="mb-1">Active cases: <strong>{{ counselor.assigned_count }}</strong></p>
+                            <span class="status-pill {% if counselor.status == 'Overloaded' %}status-overloaded{% elif counselor.status == 'Busy' %}status-busy{% else %}status-available{% endif %}">
+                                {{ counselor.status }}
+                            </span>
+                        </div>
+                            {% if not loop.last %}
+                                <hr>
+                            {% endif %}
+                        {% else %}
+                            <p class="text-muted">No counselors available.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">Assign Student to Counselor</div>
+            <div class="card-body">
+                <form action="{{ url_for('admin_assignments.assign_student') }}" method="post" class="form-inline">
+                    <div class="form-group mr-2">
+                        <label for="student_id" class="mr-2">Student</label>
+                        <select class="form-control" id="student_id" name="student_id" required>
+                            <option value="">Select student</option>
+                            {% for student in students %}
+                                <option value="{{ student.student_id }}">{{ student.student_name }} ({{ student.risk_level }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group mr-2">
+                        <label for="counselor_id" class="mr-2">Counselor</label>
+                        <select class="form-control" id="counselor_id" name="counselor_id" required>
+                            <option value="">Select counselor</option>
+                            {% for counselor in counselors %}
+                                <option value="{{ counselor.counselor_id }}">{{ counselor.counselor_name }} ({{ counselor.status }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Assign</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

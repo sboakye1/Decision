@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/static/css/styles.css" />
 </head>
 <body>
+    {% include 'nav.html' %}
     <div class="admin-container">
         <header class="admin-header">
             <div>
@@ -66,8 +67,8 @@
             </div>
         {% else %}
             <div class="empty-state-card">
-                <h2>No survey records found</h2>
-                <p>There are no student survey summaries available yet.</p>
+                <h2>No data available yet</h2>
+                <p>Please wait for survey submissions or check back later.</p>
             </div>
         {% endif %}
     </div>

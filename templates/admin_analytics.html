@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Analytics</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    {% include 'nav.html' %}
+    <div class="container py-4">
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Analytics & Insights</h2>
+            <p class="text-muted">Overview of student mental health trends.</p>
+        </header>
+
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <h6>Total students</h6>
+                        <h3>{{ data.total_students }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <h6>High risk students</h6>
+                        <h3>{{ data.risk_counts['High'] }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <h6>Assigned to counselors</h6>
+                        <h3>{{ data.assigned_count }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <h6>Pending counseling cases</h6>
+                        <h3>{{ data.pending_count }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">Risk Distribution</div>
+                    <div class="card-body">
+                        <canvas id="riskChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">Monthly Average Score Trend</div>
+                    <div class="card-body">
+                        <canvas id="trendChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-2">
+            <div class="card-header">Insights</div>
+            <div class="card-body">
+                <ul>
+                    {% for insight in data.insights %}
+                        <li>{{ insight }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Risk distribution
+        const riskCounts = [
+            {{ data.risk_counts['Low'] | default(0) }},
+            {{ data.risk_counts['Medium'] | default(0) }},
+            {{ data.risk_counts['High'] | default(0) }}
+        ];
+
+        const riskCtx = document.getElementById('riskChart').getContext('2d');
+        new Chart(riskCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Low', 'Medium', 'High'],
+                datasets: [{
+                    data: riskCounts,
+                    backgroundColor: ['#6c757d', '#ffc107', '#dc3545']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // Monthly trend
+        const months = {{ data.monthly_trend | map(attribute='month') | list | tojson }};
+        const monthScores = {{ data.monthly_trend | map(attribute='avg_score') | list | tojson }};
+
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Avg Stress Score',
+                    data: monthScores,
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0,123,255,0.1)',
+                    tension: 0.2,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Flow</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+<body>
+    {% include 'nav.html' %}
+    <div class="admin-container">
+        <header class="admin-header">
+            <div>
+                <h1>System Flow & Architecture</h1>
+                <p class="text-muted">High-level data flow and decision points in the DSS.</p>
+            </div>
+        </header>
+
+        <div class="table-card">
+            <h2>Overview</h2>
+            <p>This page explains how data moves through the Student Mental Health Decision Support System (DSS) and highlights the decision points used by administrators and counselors.</p>
+            <ol>
+                <li>Data collection: Students submit monthly surveys (survey_responses).</li>
+                <li>Scoring: Responses are processed to compute a `total_score` per survey and stored in `survey_summary`.</li>
+                <li>Risk classification: Total scores are mapped to risk levels (Low, Medium, High) by the DSS engine.</li>
+                <li>Admin review: Admins view aggregated dashboards and assign counselors for High/Medium cases.</li>
+                <li>Counselor assignment & intervention: Counselors manage cases, add notes, and schedule appointments.</li>
+                <li>Analytics: Trends and insights are generated from `survey_summary` to inform capacity planning and interventions.</li>
+            </ol>
+
+            <h3>Simple flow diagram</h3>
+            <pre>
+Data -> Survey -> Scoring -> Risk Classification
+                 |
+                 v
+            Admin Review -> Counselor Assignment -> Intervention
+                 |
+                 v
+              Analytics & Insights
+            </pre>
+        </div>
+
+        <div class="table-card mt-4">
+            <h2>Decision Points</h2>
+            <ul>
+                <li>Survey completeness check: ensure one survey per month before scoring.</li>
+                <li>Risk thresholds: determine Low/Medium/High boundaries.</li>
+                <li>Assignment policy: only one active assignment per student; balance workload.</li>
+                <li>Appointment prioritization: High risk -> immediate scheduling recommendations.</li>
+            </ul>
+        </div>
+
+        <div class="table-card mt-4">
+            <h2>Notes for Presentations</h2>
+            <ul>
+                <li>Highlight how the DSS turns survey data into actionable assignments.</li>
+                <li>Show analytics charts to demonstrate trends and justify interventions.</li>
+                <li>Discuss fairness and workload balancing for counselors.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

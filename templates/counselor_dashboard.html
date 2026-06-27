@@ -1,10 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Counselor Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
 </head>
 <body>
-    <h1>Counselor Dashboard</h1>
+    {% include 'nav.html' %}
+    <div class="counselor-container">
+        <header class="admin-header">
+            <div>
+                <h1>Counselor Case Management</h1>
+                <p>Review assigned students and manage sessions for at-risk cases.</p>
+            </div>
+        </header>
+
+        <section class="counselor-grid">
+            <div class="table-card">
+                <h2>Assigned Students</h2>
+                {% if students %}
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Program / Level</th>
+                                <th>Risk Level</th>
+                                <th>Score</th>
+                                <th>Recommendation</th>
+                                <th>Survey Month</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                                <tr>
+                                    <td>{{ student.student_name }}</td>
+                                    <td>{{ student.program }} / {{ student.level }}</td>
+                                    <td><span class="risk-badge risk-{{ student.risk_level | lower }}">{{ student.risk_level }}</span></td>
+                                    <td>{{ student.total_score }}</td>
+                                    <td>{{ student.recommendation }}</td>
+                                    <td>{{ student.survey_month }}</td>
+                                    <td>
+                                        <a class="admin-button admin-button-secondary" href="{{ url_for('counselor.student_case', student_id=student.student_id) }}">View Case</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No data available yet.</p>
+                {% endif %}
+            </div>
+
+            <div class="notes-card">
+                <h2>Pending Appointments</h2>
+                {% if appointments %}
+                    <ul class="appointment-list">
+                        {% for appt in appointments %}
+                            <li class="appointment-item">
+                                <div>
+                                    <strong>{{ appt.student_name }}</strong>
+                                    <p>{{ appt.appointment_date }}</p>
+                                </div>
+                                <span class="badge status-pending">{{ appt.status }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No data available yet.</p>
+                {% endif %}
+            </div>
+        </section>
+    </div>
 </body>
 </html>
