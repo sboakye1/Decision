@@ -1,10 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
 </head>
 <body>
-    <h1>Admin Dashboard</h1>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div>
+                <h1>Admin Decision Dashboard</h1>
+                <p>Monitor student risk levels and prioritize intervention effectively.</p>
+            </div>
+            <div class="admin-filters">
+                <form method="get" action="{{ url_for('main.admin_dashboard') }}">
+                    <label for="filter">Filter risk level:</label>
+                    <select id="filter" name="filter" onchange="this.form.submit()">
+                        <option value="All" {% if selected_filter == 'All' %}selected{% endif %}>All</option>
+                        <option value="High" {% if selected_filter == 'High' %}selected{% endif %}>High</option>
+                        <option value="Medium" {% if selected_filter == 'Medium' %}selected{% endif %}>Medium</option>
+                        <option value="Low" {% if selected_filter == 'Low' %}selected{% endif %}>Low</option>
+                    </select>
+                </form>
+            </div>
+        </header>
+
+        {% if surveys %}
+            <div class="table-card">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Program / Level</th>
+                            <th>Score</th>
+                            <th>Risk Level</th>
+                            <th>Recommendation</th>
+                            <th>Survey Month</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in surveys %}
+                            <tr>
+                                <td>{{ row.student_name }}</td>
+                                <td>{{ row.program }} / {{ row.level }}</td>
+                                <td>{{ row.total_score }}</td>
+                                <td>
+                                    <span class="risk-badge risk-{{ row.risk_level | lower }}">{{ row.risk_level }}</span>
+                                </td>
+                                <td>{{ row.recommendation }}</td>
+                                <td>{{ row.survey_month }}</td>
+                                <td>
+                                    {% if row.risk_level == 'High' %}
+                                        <a class="admin-button admin-button-primary" href="/appointments">Assign Counselor</a>
+                                        <a class="admin-button admin-button-secondary" href="/reports">View Details</a>
+                                    {% else %}
+                                        <a class="admin-button admin-button-secondary" href="/reports">View Details</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state-card">
+                <h2>No survey records found</h2>
+                <p>There are no student survey summaries available yet.</p>
+            </div>
+        {% endif %}
+    </div>
 </body>
 </html>
