@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for, session, flash
 from utils.auth import login_required, require_role
 from utils.survey import check_monthly_survey
+from services.student_service import StudentService
 
 main_bp = Blueprint("main", __name__)
 
@@ -15,7 +16,26 @@ def home():
 @require_role("student")
 @check_monthly_survey
 def student_dashboard():
-    return render_template("student_dashboard.html")
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("Please log in to continue.", "warning")
+        return redirect(url_for("auth.login"))
+
+    profile = StudentService.get_profile(user_id)
+    if not profile:
+        flash("Student profile not found.", "danger")
+        return redirect(url_for("auth.login"))
+
+    survey = StudentService.get_latest_survey(profile["student_id"])
+    if not survey:
+        flash("No survey data available. Please complete the monthly survey.", "warning")
+        return redirect(url_for("survey.survey"))
+
+    return render_template(
+        "student_dashboard.html",
+        profile=profile,
+        survey=survey,
+    )
 
 
 @main_bp.route("/counselor_dashboard")

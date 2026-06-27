@@ -1,10 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Student Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
 </head>
 <body>
-    <h1>Student Dashboard</h1>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div>
+                <h1>Welcome, {{ profile.name }}</h1>
+                <p class="subtext">{{ profile.program or 'Program not set' }} | {{ profile.level or 'Level not set' }}</p>
+            </div>
+            <div class="dashboard-status">
+                <span class="status-pill status-completed">Completed for this month</span>
+                <span class="survey-month">Latest survey: {{ survey.survey_month }}</span>
+            </div>
+        </header>
+
+        <section class="dashboard-grid">
+            <article class="dashboard-card result-card">
+                <div class="card-header">
+                    <h2>DSS Analysis</h2>
+                </div>
+                <div class="result-summary">
+                    <div class="score-box">
+                        <span class="score-title">Stress Score</span>
+                        <span class="score-value">{{ survey.total_score }}</span>
+                    </div>
+                    <div class="risk-box">
+                        <span class="risk-title">Risk Level</span>
+                        <span class="risk-badge risk-{{ survey.risk_level | lower }}">{{ survey.risk_level }}</span>
+                    </div>
+                </div>
+                <div class="recommendation-box">
+                    <h3>Recommendation</h3>
+                    <p>{{ survey.recommendation }}</p>
+                </div>
+            </article>
+
+            <article class="dashboard-card action-card">
+                <div class="card-header">
+                    <h2>Next Step</h2>
+                </div>
+                <div class="action-content">
+                    {% if survey.risk_level == 'High' %}
+                        <p class="action-text action-high">High risk detected. Immediate support is recommended.</p>
+                        <a href="/appointments" class="action-button">Book Counseling Appointment</a>
+                    {% elif survey.risk_level == 'Medium' %}
+                        <p class="action-text action-medium">Medium risk detected. Consider speaking to a counselor.</p>
+                        <a href="/appointments" class="action-link">View available appointments</a>
+                    {% else %}
+                        <p class="action-text action-low">Low risk. Keep maintaining good well-being.</p>
+                    {% endif %}
+                </div>
+            </article>
+        </section>
+    </div>
 </body>
 </html>
