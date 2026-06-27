@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template
 from utils.auth import login_required, require_role
+from utils.survey import check_monthly_survey
 
 main_bp = Blueprint("main", __name__)
 
@@ -12,6 +13,7 @@ def home():
 @main_bp.route("/student_dashboard")
 @login_required
 @require_role("student")
+@check_monthly_survey
 def student_dashboard():
     return render_template("student_dashboard.html")
 
@@ -28,12 +30,6 @@ def counselor_dashboard():
 @require_role("admin")
 def admin_dashboard():
     return render_template("admin_dashboard.html")
-
-
-@main_bp.route("/survey")
-@login_required
-def survey():
-    return render_template("survey.html")
 
 
 @main_bp.route("/appointments")

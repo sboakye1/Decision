@@ -1,10 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Survey</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monthly Mental Health Survey</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
 </head>
 <body>
-    <h1>Survey Page</h1>
+    <div class="survey-container">
+        <div class="survey-card">
+            <h1>Monthly Mental Health Survey</h1>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <form method="post" action="{{ url_for('survey.survey') }}">
+                {% for question in questions %}
+                    <div class="survey-question">
+                        <p>{{ loop.index }}. {{ question.text }}</p>
+                        <div class="survey-options">
+                            {% for option in ["Never", "Rarely", "Sometimes", "Often", "Always"] %}
+                                <label class="survey-option">
+                                    <input type="radio" name="question_{{ question.id }}" value="{{ option }}" required />
+                                    {{ option }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+                <button type="submit">Submit Survey</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
